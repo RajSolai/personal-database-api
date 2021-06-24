@@ -40,6 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
+var cors_1 = __importDefault(require("cors"));
 var nanoid_1 = require("nanoid");
 var mongodb_1 = require("mongodb");
 var username = "projectclient"; //TODO remove
@@ -49,8 +50,9 @@ var client = new mongodb_1.MongoClient(MONGO_URI, {
     useUnifiedTopology: true,
 });
 var app = express_1.default();
-app.use(express_1.default.json());
 var DB_NAME = "pdb";
+app.use(express_1.default.json());
+app.use(cors_1.default());
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
     var e_1;
     return __generator(this, function (_a) {
@@ -71,21 +73,25 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                     return __generator(this, function (_b) {
                         switch (_b.label) {
                             case 0:
-                                _b.trys.push([0, 2, , 3]);
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _b.label = 1;
+                            case 1:
+                                _b.trys.push([1, 3, , 4]);
                                 return [4 /*yield*/, client
                                         .db(DB_NAME)
                                         .collection("databases")
                                         .find({})
                                         .toArray()];
-                            case 1:
+                            case 2:
                                 data = _b.sent();
                                 res.json(data);
-                                return [3 /*break*/, 3];
-                            case 2:
+                                return [3 /*break*/, 4];
+                            case 3:
                                 _a = _b.sent();
                                 res.sendStatus(500);
-                                return [3 /*break*/, 3];
-                            case 3: return [2 /*return*/];
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
                         }
                     });
                 }); });
@@ -94,31 +100,64 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                _a.trys.push([0, 2, , 3]);
-                                console.log(req.params);
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
                                 return [4 /*yield*/, client
                                         .db(DB_NAME)
                                         .collection("databases")
                                         .findOne({ id: req.params.id, type: "project" })];
-                            case 1:
+                            case 2:
                                 data = _a.sent();
                                 res.json(data);
-                                return [3 /*break*/, 3];
-                            case 2:
+                                return [3 /*break*/, 4];
+                            case 3:
                                 e_2 = _a.sent();
                                 console.error(e_2);
                                 res.sendStatus(500);
-                                return [3 /*break*/, 3];
-                            case 3: return [2 /*return*/];
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                app.delete("/project/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var result, e_3;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                return [4 /*yield*/, client
+                                        .db(DB_NAME)
+                                        .collection("databases")
+                                        .deleteOne({ id: req.params.id, type: "project" })];
+                            case 2:
+                                result = _a.sent();
+                                res.send(result.result);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_3 = _a.sent();
+                                console.error(e_3);
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
                         }
                     });
                 }); });
                 app.put("/project/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var _a, notStarted, completed, progress, result, e_3;
+                    var _a, notStarted, completed, progress, result, e_4;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
                             case 0:
-                                _b.trys.push([0, 2, , 3]);
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _b.label = 1;
+                            case 1:
+                                _b.trys.push([1, 3, , 4]);
                                 _a = req.body, notStarted = _a.notStarted, completed = _a.completed, progress = _a.progress;
                                 return [4 /*yield*/, client
                                         .db(DB_NAME)
@@ -132,25 +171,29 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                             },
                                         },
                                     })];
-                            case 1:
-                                result = _b.sent();
-                                res.send(result);
-                                return [3 /*break*/, 3];
                             case 2:
-                                e_3 = _b.sent();
+                                result = _b.sent();
+                                res.send(result.result);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_4 = _b.sent();
                                 res.sendStatus(500);
-                                console.error(e_3);
-                                return [3 /*break*/, 3];
-                            case 3: return [2 /*return*/];
+                                console.error(e_4);
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
                         }
                     });
                 }); });
                 app.post("/project", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var data, result, e_4;
+                    var data, result, e_5;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                _a.trys.push([0, 2, , 3]);
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
                                 console.log(req.body);
                                 data = {
                                     id: nanoid_1.nanoid(8),
@@ -167,16 +210,16 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                         .db(DB_NAME)
                                         .collection("databases")
                                         .insertOne(data)];
-                            case 1:
-                                result = _a.sent();
-                                res.json(result);
-                                return [3 /*break*/, 3];
                             case 2:
-                                e_4 = _a.sent();
-                                console.log(e_4);
+                                result = _a.sent();
+                                res.json(result.result);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_5 = _a.sent();
+                                console.log(e_5);
                                 res.sendStatus(500);
-                                return [3 /*break*/, 3];
-                            case 3: return [2 /*return*/];
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
                         }
                     });
                 }); });
