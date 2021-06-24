@@ -137,7 +137,7 @@ const main = async () => {
     }
   });
 
-  app.listen(3000 || process.env.PORT);
+  app.listen( process.env.PORT || 3000);
 };
 
 main().then(() => console.log("Listening on 3000"));
