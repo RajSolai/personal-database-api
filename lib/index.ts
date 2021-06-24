@@ -1,5 +1,6 @@
 import express from "express";
 import { ProjectDataBase } from "./interfaces";
+import cors from "cors";
 import { nanoid } from "nanoid";
 import { MongoClient } from "mongodb";
 const username = "projectclient"; //TODO remove
@@ -10,8 +11,9 @@ const client = new MongoClient(MONGO_URI, {
 });
 
 const app = express();
-app.use(express.json());
 const DB_NAME = "pdb";
+app.use(express.json());
+app.use(cors());
 
 const main = async () => {
   try {
@@ -21,6 +23,11 @@ const main = async () => {
   }
 
   app.get("/", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
     try {
       const data = await client
         .db(DB_NAME)
@@ -35,6 +42,11 @@ const main = async () => {
   });
 
   app.get("/project/:id", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
     try {
       const data = await client
         .db(DB_NAME)
@@ -48,20 +60,30 @@ const main = async () => {
     }
   });
 
-  app.delete("/project/:id" , async(req:any, res:any) =>{
-    try{
-      const result  = await client
-      .db(DB_NAME)
-      .collection("databases")
-      .deleteOne({ id: req.params.id, type: "project" });
+  app.delete("/project/:id", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    try {
+      const result = await client
+        .db(DB_NAME)
+        .collection("databases")
+        .deleteOne({ id: req.params.id, type: "project" });
 
       res.send(result.result);
-    }catch(e){
+    } catch (e) {
       console.error(e);
     }
-  } );
+  });
 
   app.put("/project/:id", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
     try {
       const { notStarted, completed, progress } = req.body;
       const result = await client
@@ -87,6 +109,11 @@ const main = async () => {
   });
 
   app.post("/project", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
     try {
       console.log(req.body);
       const data: ProjectDataBase = {
