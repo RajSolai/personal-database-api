@@ -36,7 +36,6 @@ const main = async () => {
 
   app.get("/project/:id", async (req: any, res: any) => {
     try {
-      console.log(req.params);
       const data = await client
         .db(DB_NAME)
         .collection("databases")
@@ -48,6 +47,19 @@ const main = async () => {
       res.sendStatus(500);
     }
   });
+
+  app.delete("/project/:id" , async(req:any, res:any) =>{
+    try{
+      const result  = await client
+      .db(DB_NAME)
+      .collection("databases")
+      .deleteOne({ id: req.params.id, type: "project" });
+
+      res.send(result.result);
+    }catch(e){
+      console.error(e);
+    }
+  } );
 
   app.put("/project/:id", async (req: any, res: any) => {
     try {
@@ -67,7 +79,7 @@ const main = async () => {
             },
           }
         );
-      res.send(result);
+      res.send(result.result);
     } catch (e) {
       res.sendStatus(500);
       console.error(e);
@@ -93,7 +105,7 @@ const main = async () => {
         .collection("databases")
         .insertOne(data);
 
-      res.json(result);
+      res.json(result.result);
     } catch (e) {
       console.log(e);
       res.sendStatus(500);
