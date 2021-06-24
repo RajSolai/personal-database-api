@@ -3,9 +3,7 @@ import { ProjectDataBase } from "./interfaces";
 import cors from "cors";
 import { nanoid } from "nanoid";
 import { MongoClient } from "mongodb";
-const username = "projectclient"; //TODO remove
-const pass = "5r95TiOy7b361Ikd"; //TODO remove
-const MONGO_URI = `mongodb+srv://${username}:${pass}@cluster0.udyz3.mongodb.net/pdb?retryWrites=true&w=majority`;
+const MONGO_URI = `mongodb+srv://${process.env.MONGO_USR}:${process.env.MONGO_PASS}@cluster0.udyz3.mongodb.net/pdb?retryWrites=true&w=majority`;
 const client = new MongoClient(MONGO_URI, {
   useUnifiedTopology: true,
 });
