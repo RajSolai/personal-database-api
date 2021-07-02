@@ -120,7 +120,7 @@ const main = async () => {
         description: req.body.desc,
         type: "project",
         body: {
-          noStarted: [],
+          notStarted: [],
           progress: [],
           completed: [],
         },
