@@ -1,5 +1,5 @@
 import express from "express";
-import { ProjectDataBase } from "./interfaces";
+import { ListDataType, ProjectDataBase } from "./interfaces";
 import cors from "cors";
 import { nanoid } from "nanoid";
 import { MongoClient } from "mongodb";
@@ -39,7 +39,7 @@ const main = async () => {
     }
   });
 
-  app.get("/project/:id", async (req: any, res: any) => {
+  app.get("/database/:id", async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -49,7 +49,7 @@ const main = async () => {
       const data = await client
         .db(DB_NAME)
         .collection("databases")
-        .findOne({ id: req.params.id, type: "project" });
+        .findOne({ id: req.params.id });
 
       res.json(data);
     } catch (e) {
@@ -58,7 +58,7 @@ const main = async () => {
     }
   });
 
-  app.delete("/project/:id", async (req: any, res: any) => {
+  app.delete("/database/:id", async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -68,10 +68,39 @@ const main = async () => {
       const result = await client
         .db(DB_NAME)
         .collection("databases")
-        .deleteOne({ id: req.params.id, type: "project" });
+        .deleteOne({ id: req.params.id });
 
       res.send(result.result);
     } catch (e) {
+      console.error(e);
+    }
+  });
+
+  app.put("/list/:id", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    try {
+      const { todoList, completedList } = req.body;
+      const result = await client
+        .db(DB_NAME)
+        .collection("databases")
+        .updateOne(
+          { id: req.params.id },
+          {
+            $set: {
+              body: {
+                todoList: todoList,
+                completedList: completedList,
+              },
+            },
+          }
+        );
+      res.send(result.result);
+    } catch (e) {
+      res.sendStatus(500);
       console.error(e);
     }
   });
@@ -106,6 +135,35 @@ const main = async () => {
     }
   });
 
+  app.post("/list", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    try {
+      const data: ListDataType = {
+        id: nanoid(8),
+        name: req.body.name,
+        description: req.body.desc,
+        type: "list",
+        body: {
+          todoList: [],
+          completedList: [],
+        },
+      };
+      const result = await client
+        .db(DB_NAME)
+        .collection("databases")
+        .insertOne(data);
+
+      res.json(result.result);
+    } catch (e) {
+      console.log(e);
+      res.sendStatus(500);
+    }
+  });
+
   app.post("/project", async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
@@ -113,7 +171,6 @@ const main = async () => {
       "Origin, X-Requested-With, Content-Type, Accept"
     );
     try {
-      console.log(req.body);
       const data: ProjectDataBase = {
         id: nanoid(8),
         name: req.body.name,
@@ -137,7 +194,7 @@ const main = async () => {
     }
   });
 
-  app.listen( process.env.PORT || 3000);
+  app.listen(process.env.PORT || 3000);
 };
 
 main().then(() => console.log("Listening on 3000"));

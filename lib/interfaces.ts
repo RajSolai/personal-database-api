@@ -4,13 +4,26 @@ export interface ProjectDataBase {
   name: string;
   description: string;
   type: string;
-  body: object;
+  body: {
+    notStarted: string[];
+    progress: string[];
+    completed: string[];
+  };
 }
 
-// TODO : implement tables
-export interface TableDataBase {
+export interface ListItemType {
+  checked: boolean;
+  id: string;
+  task: string;
+}
+
+export interface ListDataType {
+  id: string;
   name: string;
   description: string;
   type: string;
-  body: Map<string, Array<String>>;
+  body: {
+    todoList: ListItemType[];
+    completedList: ListItemType[];
+  };
 }

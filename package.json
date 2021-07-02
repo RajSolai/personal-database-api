@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "dev": "ts-node lib/index.ts",
+    "dev": "MONGO_USR=projectclient MONGO_PASS=5r95TiOy7b361Ikd ts-node lib/index.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
