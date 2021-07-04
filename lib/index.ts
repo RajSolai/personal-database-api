@@ -13,6 +13,20 @@ const DB_NAME = "pdb";
 app.use(express.json());
 app.use(cors());
 
+const verifyLogin = (req: any, res: any, next: any) => {
+  const tokenToVerify = req.headers["auth-token"];
+  if (!tokenToVerify) return res.send("Access Denied").sendStatus(401);
+  try {
+    if (tokenToVerify == process.env.SECRET) {
+      next();
+    } else {
+      throw "invalid";
+    }
+  } catch (error) {
+    res.send("Invalid Token, Access Denied").sendStatus(400);
+  }
+};
+
 const main = async () => {
   try {
     await client.connect();
@@ -20,7 +34,7 @@ const main = async () => {
     console.error(e);
   }
 
-  app.get("/", async (req: any, res: any) => {
+  app.get("/", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -39,7 +53,7 @@ const main = async () => {
     }
   });
 
-  app.get("/database/:id", async (req: any, res: any) => {
+  app.get("/database/:id", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -58,7 +72,7 @@ const main = async () => {
     }
   });
 
-  app.delete("/database/:id", async (req: any, res: any) => {
+  app.delete("/database/:id", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -76,7 +90,7 @@ const main = async () => {
     }
   });
 
-  app.put("/list/:id", async (req: any, res: any) => {
+  app.put("/list/:id", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -105,7 +119,7 @@ const main = async () => {
     }
   });
 
-  app.put("/project/:id", async (req: any, res: any) => {
+  app.put("/project/:id", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -135,7 +149,7 @@ const main = async () => {
     }
   });
 
-  app.post("/list", async (req: any, res: any) => {
+  app.post("/list", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
@@ -164,7 +178,7 @@ const main = async () => {
     }
   });
 
-  app.post("/project", async (req: any, res: any) => {
+  app.post("/project", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",
