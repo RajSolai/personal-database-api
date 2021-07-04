@@ -53,6 +53,19 @@ const main = async () => {
     }
   });
 
+  app.post("/login", async (req: any, res: any) => {
+    try {
+      const { passcode } = req.body;
+      if (passcode == process.env.PASSCODE) {
+        res.send({ token: process.env.SECRET }).sendStatus(200);
+      } else {
+        throw "invalid pass";
+      }
+    } catch {
+      res.send("Invalid Passcode").sendStatus(400);
+    }
+  });
+
   app.get("/database/:id", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
