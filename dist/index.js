@@ -43,9 +43,7 @@ var express_1 = __importDefault(require("express"));
 var cors_1 = __importDefault(require("cors"));
 var nanoid_1 = require("nanoid");
 var mongodb_1 = require("mongodb");
-var username = "projectclient"; //TODO remove
-var pass = "5r95TiOy7b361Ikd"; //TODO remove
-var MONGO_URI = "mongodb+srv://" + username + ":" + pass + "@cluster0.udyz3.mongodb.net/pdb?retryWrites=true&w=majority";
+var MONGO_URI = "mongodb+srv://" + process.env.MONGO_USR + ":" + process.env.MONGO_PASS + "@cluster0.udyz3.mongodb.net/pdb?retryWrites=true&w=majority";
 var client = new mongodb_1.MongoClient(MONGO_URI, {
     useUnifiedTopology: true,
 });
@@ -53,6 +51,22 @@ var app = express_1.default();
 var DB_NAME = "pdb";
 app.use(express_1.default.json());
 app.use(cors_1.default());
+var verifyLogin = function (req, res, next) {
+    var tokenToVerify = req.headers["auth-token"];
+    if (!tokenToVerify)
+        return res.send("Access Denied").sendStatus(401);
+    try {
+        if (tokenToVerify == process.env.SECRET) {
+            next();
+        }
+        else {
+            throw "invalid";
+        }
+    }
+    catch (error) {
+        res.send("Invalid Token, Access Denied").sendStatus(400);
+    }
+};
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
     var e_1;
     return __generator(this, function (_a) {
@@ -68,7 +82,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                 console.error(e_1);
                 return [3 /*break*/, 3];
             case 3:
-                app.get("/", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                app.get("/", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
                     var data, _a;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
@@ -95,7 +109,25 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                         }
                     });
                 }); });
-                app.get("/project/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                app.post("/login", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var passcode;
+                    return __generator(this, function (_a) {
+                        try {
+                            passcode = req.body.passcode;
+                            if (passcode == process.env.PASSCODE) {
+                                res.send({ token: process.env.SECRET }).sendStatus(200);
+                            }
+                            else {
+                                throw "invalid pass";
+                            }
+                        }
+                        catch (_b) {
+                            res.send("Invalid Passcode").sendStatus(400);
+                        }
+                        return [2 /*return*/];
+                    });
+                }); });
+                app.get("/database/:id", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
                     var data, e_2;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -108,7 +140,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 return [4 /*yield*/, client
                                         .db(DB_NAME)
                                         .collection("databases")
-                                        .findOne({ id: req.params.id, type: "project" })];
+                                        .findOne({ id: req.params.id })];
                             case 2:
                                 data = _a.sent();
                                 res.json(data);
@@ -122,7 +154,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                         }
                     });
                 }); });
-                app.delete("/project/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                app.delete("/database/:id", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
                     var result, e_3;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -135,7 +167,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 return [4 /*yield*/, client
                                         .db(DB_NAME)
                                         .collection("databases")
-                                        .deleteOne({ id: req.params.id, type: "project" })];
+                                        .deleteOne({ id: req.params.id })];
                             case 2:
                                 result = _a.sent();
                                 res.send(result.result);
@@ -148,8 +180,43 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                         }
                     });
                 }); });
-                app.put("/project/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var _a, notStarted, completed, progress, result, e_4;
+                app.put("/list/:id", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var _a, todoList, completedList, result, e_4;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _b.label = 1;
+                            case 1:
+                                _b.trys.push([1, 3, , 4]);
+                                _a = req.body, todoList = _a.todoList, completedList = _a.completedList;
+                                return [4 /*yield*/, client
+                                        .db(DB_NAME)
+                                        .collection("databases")
+                                        .updateOne({ id: req.params.id }, {
+                                        $set: {
+                                            body: {
+                                                todoList: todoList,
+                                                completedList: completedList,
+                                            },
+                                        },
+                                    })];
+                            case 2:
+                                result = _b.sent();
+                                res.send(result.result);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_4 = _b.sent();
+                                res.sendStatus(500);
+                                console.error(e_4);
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                app.put("/project/:id", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var _a, notStarted, completed, progress, result, e_5;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
                             case 0:
@@ -176,16 +243,16 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.send(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_4 = _b.sent();
+                                e_5 = _b.sent();
                                 res.sendStatus(500);
-                                console.error(e_4);
+                                console.error(e_5);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];
                         }
                     });
                 }); });
-                app.post("/project", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var data, result, e_5;
+                app.post("/list", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var data, result, e_6;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -194,14 +261,50 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 _a.label = 1;
                             case 1:
                                 _a.trys.push([1, 3, , 4]);
-                                console.log(req.body);
+                                data = {
+                                    id: nanoid_1.nanoid(8),
+                                    name: req.body.name,
+                                    description: req.body.desc,
+                                    type: "list",
+                                    body: {
+                                        todoList: [],
+                                        completedList: [],
+                                    },
+                                };
+                                return [4 /*yield*/, client
+                                        .db(DB_NAME)
+                                        .collection("databases")
+                                        .insertOne(data)];
+                            case 2:
+                                result = _a.sent();
+                                res.json(result.result);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_6 = _a.sent();
+                                console.log(e_6);
+                                res.sendStatus(500);
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                app.post("/project", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var data, result, e_7;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
                                 data = {
                                     id: nanoid_1.nanoid(8),
                                     name: req.body.name,
                                     description: req.body.desc,
                                     type: "project",
                                     body: {
-                                        noStarted: [],
+                                        notStarted: [],
                                         progress: [],
                                         completed: [],
                                     },
@@ -215,15 +318,15 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.json(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_5 = _a.sent();
-                                console.log(e_5);
+                                e_7 = _a.sent();
+                                console.log(e_7);
                                 res.sendStatus(500);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];
                         }
                     });
                 }); });
-                app.listen(3000 || process.env.PORT);
+                app.listen(process.env.PORT || 3000);
                 return [2 /*return*/];
         }
     });
