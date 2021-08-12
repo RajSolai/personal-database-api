@@ -85,6 +85,25 @@ const main = async () => {
     }
   });
 
+  app.get("/database/public/:id", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    try {
+      const data = await client
+        .db(DB_NAME)
+        .collection("databases")
+        .findOne({ id: req.params.id,private:false });
+
+      res.json(data);
+    } catch (e) {
+      console.error(e);
+      res.sendStatus(500);
+    }
+  });
+
   app.delete("/database/:id", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
