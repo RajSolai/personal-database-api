@@ -3,6 +3,8 @@ import { ListDataType, ProjectDataBase } from "./interfaces";
 import cors from "cors";
 import { nanoid } from "nanoid";
 import { MongoClient } from "mongodb";
+import dotenv from "dotenv";
+dotenv.config();
 const MONGO_URI = `mongodb+srv://${process.env.MONGO_USR}:${process.env.MONGO_PASS}@cluster0.udyz3.mongodb.net/pdb?retryWrites=true&w=majority`;
 const client = new MongoClient(MONGO_URI, {
   useUnifiedTopology: true,
@@ -95,7 +97,7 @@ const main = async () => {
       const data = await client
         .db(DB_NAME)
         .collection("databases")
-        .findOne({ id: req.params.id,private:false });
+        .findOne({ id: req.params.id, public: true });
 
       res.json(data);
     } catch (e) {
@@ -151,7 +153,7 @@ const main = async () => {
     }
   });
 
-  app.put("/project/:id", verifyLogin, async (req: any, res: any) => {
+  app.put("/project/:id", async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
       "Access-Control-Allow-Headers",

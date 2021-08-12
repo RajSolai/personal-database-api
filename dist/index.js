@@ -43,6 +43,8 @@ var express_1 = __importDefault(require("express"));
 var cors_1 = __importDefault(require("cors"));
 var nanoid_1 = require("nanoid");
 var mongodb_1 = require("mongodb");
+var dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 var MONGO_URI = "mongodb+srv://" + process.env.MONGO_USR + ":" + process.env.MONGO_PASS + "@cluster0.udyz3.mongodb.net/pdb?retryWrites=true&w=majority";
 var client = new mongodb_1.MongoClient(MONGO_URI, {
     useUnifiedTopology: true,
@@ -154,8 +156,35 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                         }
                     });
                 }); });
+                app.get("/database/public/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var data, e_3;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                return [4 /*yield*/, client
+                                        .db(DB_NAME)
+                                        .collection("databases")
+                                        .findOne({ id: req.params.id, public: true })];
+                            case 2:
+                                data = _a.sent();
+                                res.json(data);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_3 = _a.sent();
+                                console.error(e_3);
+                                res.sendStatus(500);
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
                 app.delete("/database/:id", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var result, e_3;
+                    var result, e_4;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -173,15 +202,15 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.send(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_3 = _a.sent();
-                                console.error(e_3);
+                                e_4 = _a.sent();
+                                console.error(e_4);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];
                         }
                     });
                 }); });
                 app.put("/list/:id", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var _a, todoList, completedList, result, e_4;
+                    var _a, todoList, completedList, result, e_5;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
                             case 0:
@@ -207,16 +236,16 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.send(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_4 = _b.sent();
+                                e_5 = _b.sent();
                                 res.sendStatus(500);
-                                console.error(e_4);
+                                console.error(e_5);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];
                         }
                     });
                 }); });
                 app.put("/project/:id", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var _a, notStarted, completed, progress, result, e_5;
+                    var _a, notStarted, completed, progress, result, e_6;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
                             case 0:
@@ -243,16 +272,16 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.send(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_5 = _b.sent();
+                                e_6 = _b.sent();
                                 res.sendStatus(500);
-                                console.error(e_5);
+                                console.error(e_6);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];
                         }
                     });
                 }); });
                 app.post("/list", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var data, result, e_6;
+                    var data, result, e_7;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -280,8 +309,8 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.json(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_6 = _a.sent();
-                                console.log(e_6);
+                                e_7 = _a.sent();
+                                console.log(e_7);
                                 res.sendStatus(500);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];
@@ -289,7 +318,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                     });
                 }); });
                 app.post("/project", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var data, result, e_7;
+                    var data, result, e_8;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -318,8 +347,8 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.json(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_7 = _a.sent();
-                                console.log(e_7);
+                                e_8 = _a.sent();
+                                console.log(e_8);
                                 res.sendStatus(500);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];
