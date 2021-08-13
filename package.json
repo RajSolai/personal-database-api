@@ -7,18 +7,15 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "prestart": "tsc",
-    "start": "MONGO_USR=projectclient MONGO_PASS=5r95TiOy7b361Ikd node dist/index.js"
-  },
-  "engines": {
-    "node": "14.17.4",
-    "npm": "6.14.14"
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "helmet": "^4.6.0",
     "mongodb": "^3.6.9",
     "nanoid": "^3.1.23",
     "uuid": "^8.3.2"

@@ -1,4 +1,5 @@
 import express from "express";
+import helmet from "helmet";
 import { ListDataType, ProjectDataBase } from "./interfaces";
 import cors from "cors";
 import { nanoid } from "nanoid";
@@ -12,6 +13,7 @@ const client = new MongoClient(MONGO_URI, {
 
 const app = express();
 const DB_NAME = "pdb";
+app.use(helmet());
 app.use(express.json());
 app.use(cors());
 

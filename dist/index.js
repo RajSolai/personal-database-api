@@ -40,6 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
+var helmet_1 = __importDefault(require("helmet"));
 var cors_1 = __importDefault(require("cors"));
 var nanoid_1 = require("nanoid");
 var mongodb_1 = require("mongodb");
@@ -51,6 +52,7 @@ var client = new mongodb_1.MongoClient(MONGO_URI, {
 });
 var app = express_1.default();
 var DB_NAME = "pdb";
+app.use(helmet_1.default());
 app.use(express_1.default.json());
 app.use(cors_1.default());
 var verifyLogin = function (req, res, next) {
@@ -244,7 +246,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                         }
                     });
                 }); });
-                app.put("/project/:id", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                app.put("/project/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
                     var _a, notStarted, completed, progress, result, e_6;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
