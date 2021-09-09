@@ -282,8 +282,40 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                         }
                     });
                 }); });
+                app.put("/notes/:id", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var notesContent, result, e_7;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                notesContent = req.body.notesContent;
+                                return [4 /*yield*/, client
+                                        .db(DB_NAME)
+                                        .collection("databases")
+                                        .updateOne({ id: req.params.id }, {
+                                        $set: {
+                                            content: notesContent,
+                                        },
+                                    })];
+                            case 2:
+                                result = _a.sent();
+                                res.send(result.result);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_7 = _a.sent();
+                                res.sendStatus(500);
+                                console.error(e_7);
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
                 app.post("/list", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var data, result, e_7;
+                    var data, result, e_8;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -311,8 +343,42 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.json(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_7 = _a.sent();
-                                console.log(e_7);
+                                e_8 = _a.sent();
+                                console.log(e_8);
+                                res.sendStatus(500);
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                app.post("/notes", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var data, result, e_9;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                res.header("Access-Control-Allow-Origin", "*");
+                                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                data = {
+                                    id: nanoid_1.nanoid(8),
+                                    name: req.body.name,
+                                    description: req.body.desc,
+                                    type: "list",
+                                    content: "<p>Start typing</p>",
+                                };
+                                return [4 /*yield*/, client
+                                        .db(DB_NAME)
+                                        .collection("databases")
+                                        .insertOne(data)];
+                            case 2:
+                                result = _a.sent();
+                                res.json(result.result);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                e_9 = _a.sent();
+                                console.log(e_9);
                                 res.sendStatus(500);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];
@@ -320,7 +386,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                     });
                 }); });
                 app.post("/project", verifyLogin, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-                    var data, result, e_8;
+                    var data, result, e_10;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -349,8 +415,8 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                                 res.json(result.result);
                                 return [3 /*break*/, 4];
                             case 3:
-                                e_8 = _a.sent();
-                                console.log(e_8);
+                                e_10 = _a.sent();
+                                console.log(e_10);
                                 res.sendStatus(500);
                                 return [3 /*break*/, 4];
                             case 4: return [2 /*return*/];

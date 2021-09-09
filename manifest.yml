@@ -4,4 +4,4 @@ applications:
     instances: 1
     command: npm run-script start
     random-route: true
-    memory: 128M
+    memory: 64M

@@ -27,3 +27,11 @@ export interface ListDataType {
     completedList: ListItemType[];
   };
 }
+
+export interface NotesDataType {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  content: String;
+}

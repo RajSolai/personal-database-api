@@ -1,6 +1,6 @@
 import express from "express";
 import helmet from "helmet";
-import { ListDataType, ProjectDataBase } from "./interfaces";
+import { ListDataType, NotesDataType, ProjectDataBase } from "./interfaces";
 import cors from "cors";
 import { nanoid } from "nanoid";
 import { MongoClient } from "mongodb";
@@ -185,6 +185,32 @@ const main = async () => {
     }
   });
 
+  app.put("/notes/:id", async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    try {
+      const { notesContent } = req.body;
+      const result = await client
+        .db(DB_NAME)
+        .collection("databases")
+        .updateOne(
+          { id: req.params.id },
+          {
+            $set: {
+              content: notesContent,
+            },
+          }
+        );
+      res.send(result.result);
+    } catch (e) {
+      res.sendStatus(500);
+      console.error(e);
+    }
+  });
+
   app.post("/list", verifyLogin, async (req: any, res: any) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
@@ -201,6 +227,32 @@ const main = async () => {
           todoList: [],
           completedList: [],
         },
+      };
+      const result = await client
+        .db(DB_NAME)
+        .collection("databases")
+        .insertOne(data);
+
+      res.json(result.result);
+    } catch (e) {
+      console.log(e);
+      res.sendStatus(500);
+    }
+  });
+
+  app.post("/notes", verifyLogin, async (req: any, res: any) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    try {
+      const data: NotesDataType = {
+        id: nanoid(8),
+        name: req.body.name,
+        description: req.body.desc,
+        type: "list",
+        content: "<p>Start typing</p>",
       };
       const result = await client
         .db(DB_NAME)
