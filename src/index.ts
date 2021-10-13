@@ -251,7 +251,7 @@ const main = async () => {
         id: nanoid(8),
         name: req.body.name,
         description: req.body.desc,
-        type: "list",
+        type: "notes",
         content: "<p>Start typing</p>",
       };
       const result = await client
